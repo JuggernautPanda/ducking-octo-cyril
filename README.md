@@ -1,4 +1,4 @@
 ducking-octo-cyril
 ==================
 
-PyCuda library
+miscellaneous tests for pycuda
