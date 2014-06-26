@@ -17,12 +17,12 @@ __global__ void multiply_them(float *dest, float *a, float *b)
 
 multiply_them = mod.get_function("multiply_them")
 
-a = numpy.random.randn(4000).astype(numpy.float32)
-b = numpy.random.randn(4000).astype(numpy.float32)
+a = numpy.random.randn(65536).astype(numpy.float32)
+b = numpy.random.randn(65536).astype(numpy.float32)
 
 dest = numpy.zeros_like(a)
 multiply_them(
         drv.Out(dest), drv.In(a), drv.In(b),
-        block=(400,1,1),grid=(10,1,1))
+        block=(1024,1,1),grid=(64,1,1))
 
 print dest-a*b
