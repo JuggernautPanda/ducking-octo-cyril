@@ -11,3 +11,4 @@ import scipy.misc as scm
 lena=scm.imread('Lenna.png').astype(np.uint8)
 print lena.shape
 
+#ok
