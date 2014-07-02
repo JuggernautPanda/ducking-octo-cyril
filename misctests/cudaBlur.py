@@ -12,48 +12,46 @@ mod = SourceModule \
     (
         """
 
+
+
+
 #define INDEX(a, b) a*256+b
 
-__global__ void rgb2gray(int *dest,int *r_img, int *g_img, int *b_img)
+__global__ void blur(float *dest,float *r_img)
 {
 
-unsigned int idx = threadIdx.x+(blockIdx.x*(blockDim.x*blockDim.y));
 
-  unsigned int a = idx/256;
-  unsigned int b = idx%256;
 
-if((a > 1 && a<255) && (b > 1 && b<255))
-{
-r_img[INDEX(a, b)] = (0.2(r_img[INDEX(a-1, b-1)]+r_img[INDEX(a+1, b-1)]+r_img[INDEX(a-1, b+1)]+r_img[INDEX(a+1, b+1)]+r_img[INDEX(a, b)]))
-g_img[INDEX(a, b)] = (0.2(g_img[INDEX(a-1, b-1)]+g_img[INDEX(a+1, b-1)]+g_img[INDEX(a-1, b+1)]+r_img[INDEX(a+1, b+1)]+g_img[INDEX(a, b)]))
-b_img[INDEX(a, b)] = (0.2(b_img[INDEX(a-1, b-1)]+b_img[INDEX(a+1, b-1)]+b_img[INDEX(a-1, b+1)]+b_img[INDEX(a+1, b+1)]+b_img[INDEX(a, b)]))
+const uint a =  threadIdx.x + blockIdx.x * blockDim.x;
+const uint b =  threadIdx.y + blockIdx.y * blockDim.y;
 
-}
+dest[INDEX(a, b)] = r_img[INDEX(a, b)] + r_img[INDEX(a-1, b+1)];
+
 __syncthreads();
-
 }
 
 """
     )
 
-a = scm.imread('Lenna.png').astype(np.uint8)
+a = scm.imread('Lenna.png').astype(np.float32)
+
 r_img = a[:, :, 0].reshape(65536, order='F')
 g_img = a[:, :, 1].reshape(65536, order='F')
 b_img = a[:, :, 2].reshape(65536, order='F')
-dest=r_img
-rgb2gray = mod.get_function("rgb2gray")
-rgb2gray(drv.In(r_img), drv.In(g_img),drv.In(b_img),block=(1024, 1, 1), grid=(64, 1, 1))
-
-r_img=mod.get()
-b_img=mod.get()
-g_img=mod.get()
-
-r_img=np.reshape(r_img,(256,256), order='F')
-g_img=np.reshape(g_img,(256,256), order='F')
-b_img=np.reshape(b_img,(256,256), order='F')
 
 
+dest_r=r_img
+print dest_r.shape
+
+
+blur = mod.get_function("blur")
+blur(drv.Out(dest_r),  drv.In(r_img), block=(8, 8, 1), grid=(32,32, 1))
+
+
+a[:, :, 0] = np.reshape(dest_r, (256, 256), order='F')
+#a[:, :, 1] = np.reshape(dest_b, (256, 256), order='F')
+#a[:, :, 2] = np.reshape(dest_g, (256, 256), order='F')
 
 p.gray()
-p.imshow(dest)
+p.imshow(a[:,:,0])
 p.show()
