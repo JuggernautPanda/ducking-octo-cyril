@@ -11,23 +11,36 @@ import matplotlib.pyplot as p
 mod = SourceModule \
     (
         """
-
-
-
-
+#include<stdio.h>
 #define INDEX(a, b) a*256+b
 
-__global__ void blur(float *dest,float *r_img)
+__global__ void blur(float *dest ,float *r_img)
 {
 
 
 
-const uint a =  threadIdx.x + blockIdx.x * blockDim.x;
-const uint b =  threadIdx.y + blockIdx.y * blockDim.y;
+const int a =  threadIdx.x + blockIdx.x * blockDim.x;
+const int b =  threadIdx.y + blockIdx.y * blockDim.y;
+float temp = 0;
+int i=0;
 
-dest[INDEX(a, b)] = r_img[INDEX(a, b)] + r_img[INDEX(a-1, b+1)];
 
+float c[4]={0,0,0,0};
+
+if ((a>1 && a<255) && (b>1 && b<255))
+{
+temp = 0;
+for(i=0;i<5;i++)
+{
+  c[0] = r_img[INDEX(a, b)];
+
+temp += c[i];
+}
+}
 __syncthreads();
+
+dest[INDEX(a, b)]=temp;
+
 }
 
 """
@@ -52,6 +65,6 @@ a[:, :, 0] = np.reshape(dest_r, (256, 256), order='F')
 #a[:, :, 1] = np.reshape(dest_b, (256, 256), order='F')
 #a[:, :, 2] = np.reshape(dest_g, (256, 256), order='F')
 
-p.gray()
-p.imshow(a[:,:,0])
+
+p.imshow(a)
 p.show()
