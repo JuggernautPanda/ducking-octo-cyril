@@ -21,7 +21,7 @@ const int a =  threadIdx.x ;
 if(a<(1000-1) && a>1)
 {
 
-dest[a] = (src[a]+src[a+1]+src[a-1]);
+dest[a] = (2*src[a]+src[a+1]+src[a-1])/3;
 }
 
 else
