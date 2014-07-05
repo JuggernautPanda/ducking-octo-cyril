@@ -7,11 +7,11 @@ import numpy as np
 from pycuda.compiler import SourceModule
 import coeff as c
 import matplotlib.pyplot as p
-
+import scipy.io as sc
 
 
 mod = SourceModule("""
-#include<stdio.h>
+
 __global__ void filter(float *res,float *coeff, float *input, int *n)
 {
   const int tid  = threadIdx.x+(blockIdx.x*(blockDim.x));
@@ -39,7 +39,11 @@ __global__ void filter(float *res,float *coeff, float *input, int *n)
 
 filter = mod.get_function("filter")
 
-input = np.random.randn(65536).astype(np.float32)
+mat=sc.loadmat('sample.mat')
+input= ((mat['val'][0])[0:65536]).astype(np.float32)
+
+
+#input = np.random.randn(65536).astype(np.float32)
 
 
 ###################################################################
@@ -73,7 +77,7 @@ filter(
         block=(1024,1,1),grid=(64,1,1))
 
 beta_out = res
-print res
+
 ###################################################################
 # theta
 ###################################################################
@@ -104,9 +108,9 @@ filter(
 
 delta_out = res
 
-#################################################################
+##################################################################
 # plotting for the sake of clarity
-#################################################################
+##################################################################
 
 p.subplot(5,1,1)
 p.plot(input)
