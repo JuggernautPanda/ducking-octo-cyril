@@ -60,7 +60,10 @@ __syncthreads();
 
 
 
-src = a = np.arange(3200).astype(np.float32)
+src =  np.arange(3200).astype(np.float32)
+# np.arange(3200).astype(np.float32)
+# numpy.random.randn(65536).astype(numpy.float32)
+
 dest = np.zeros(src.shape).astype(np.float32)
 
 scan = mod.get_function("scan")

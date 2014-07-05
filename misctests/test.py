@@ -10,7 +10,7 @@ from pycuda.compiler import SourceModule
 mod = SourceModule("""
 __global__ void multiply_them(float *dest, float *a, float *b)
 {
-  const int i = threadIdx.x+(blockIdx.x*(blockDim.x*blockDim.y));
+  const int i = threadIdx.x+(blockIdx.x*(blockDim.x));
   dest[i] = a[i] * b[i];
 }
 """)
