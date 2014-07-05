@@ -4,9 +4,11 @@ import pycuda.driver as drv
 import pycuda.tools
 import pycuda.autoinit
 import numpy as np
-import numpy.linalg as la
 from pycuda.compiler import SourceModule
 import coeff as c
+import matplotlib.pyplot as p
+
+
 
 mod = SourceModule("""
 #include<stdio.h>
@@ -38,7 +40,7 @@ __global__ void filter(float *res,float *coeff, float *input, int *n)
 filter = mod.get_function("filter")
 
 input = np.random.randn(65536).astype(np.float32)
-res = (input)
+res = np.zeros(input.shape)
 
 ###################################################################
 # alpha
@@ -53,7 +55,8 @@ filter(
         drv.Out(res), drv.In(coeff), drv.In(input),drv.In(Ntap),
         block=(1024,1,1),grid=(64,1,1))
 
-print res
+
+alpha_out = res
 
 ###################################################################
 # beta
@@ -68,7 +71,7 @@ filter(
         drv.Out(res), drv.In(coeff), drv.In(input),drv.In(Ntap),
         block=(1024,1,1),grid=(64,1,1))
 
-print res
+beta_out = res
 
 ###################################################################
 # theta
@@ -83,7 +86,7 @@ filter(
         drv.Out(res), drv.In(coeff), drv.In(input),drv.In(Ntap),
         block=(1024,1,1),grid=(64,1,1))
 
-print res
+theta_out = res
 
 ###################################################################
 # delta
@@ -98,4 +101,25 @@ filter(
         drv.Out(res), drv.In(coeff), drv.In(input),drv.In(Ntap),
         block=(1024,1,1),grid=(64,1,1))
 
-print res
+delta_out = res
+
+#################################################################
+# plotting for the sake of clarity
+#################################################################
+
+p.subplot(5,1,1)
+p.plot(input)
+p.title("input")
+p.subplot(5,1,2)
+p.plot(alpha_out)
+p.title("alpha")
+p.subplot(5,1,3)
+p.plot(beta_out)
+p.title("beta")
+p.subplot(5,1,4)
+p.plot(theta_out)
+p.title("theta")
+p.subplot(5,1,5)
+p.plot(delta_out)
+p.title("delta")
+p.show()
