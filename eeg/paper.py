@@ -40,12 +40,12 @@ __global__ void filter(float *res,float *coeff, float *input, int *n)
 filter = mod.get_function("filter")
 
 input = np.random.randn(65536).astype(np.float32)
-res = np.zeros(input.shape)
+
 
 ###################################################################
 # alpha
 ###################################################################
-
+res = np.zeros(input.shape)
 coeff = np.array(c.alpha).astype(np.float32)
 Ntap = np.int32([len(coeff)]).astype(np.int32)
 
@@ -57,11 +57,12 @@ filter(
 
 
 alpha_out = res
+print res
 
 ###################################################################
 # beta
 ###################################################################
-
+res = np.zeros(input.shape)
 coeff = np.array(c.beta).astype(np.float32)
 Ntap = np.int32([len(coeff)]).astype(np.int32)
 
@@ -72,11 +73,11 @@ filter(
         block=(1024,1,1),grid=(64,1,1))
 
 beta_out = res
-
+print res
 ###################################################################
 # theta
 ###################################################################
-
+res = np.zeros(input.shape)
 coeff = np.array(c.theta).astype(np.float32)
 Ntap = np.int32([len(coeff)]).astype(np.int32)
 
@@ -91,7 +92,7 @@ theta_out = res
 ###################################################################
 # delta
 ###################################################################
-
+res = np.zeros(input.shape)
 coeff = np.array(c.delta).astype(np.float32)
 Ntap = np.int32([len(coeff)]).astype(np.int32)
 
