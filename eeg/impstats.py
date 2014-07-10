@@ -1,4 +1,5 @@
-#simple example
+__author__ = 'ashwin'
+
 
 import pycuda.driver as drv
 import pycuda.tools
@@ -11,7 +12,7 @@ mod = SourceModule("""
 __global__ void multiply_them(float *dest, float *a, float *b)
 {
   const int i = threadIdx.x+(blockIdx.x*(blockDim.x));
-  dest[i] = a[i] * b[i];
+
 }
 """)
 
@@ -25,5 +26,4 @@ multiply_them(
         drv.Out(dest), drv.In(a), drv.In(b),
         block=(1024,1,1),grid=(64,1,1))
 
-print dest
-# print dest-a*b
+print dest-a*b

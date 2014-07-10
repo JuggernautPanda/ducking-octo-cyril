@@ -30,15 +30,15 @@ __global__ void gpucos(float *dest, float *a)
 gpusin = mod.get_function("gpusin")
 gpucos = mod.get_function("gpucos")
 
-a = (numpy.arange(400)).astype(numpy.float32)
+a = (numpy.arange(4000)).astype(numpy.float32)
 b = numpy.sin(a)
 c = numpy.cos(a)
 
 destsin = numpy.zeros_like(a)
 destcos = numpy.zeros_like(a)
 
-gpusin(drv.Out(destsin), drv.In(a), block=(40, 1, 1), grid=(10, 1, 1))
-gpucos(drv.Out(destcos), drv.In(a), block=(40, 1, 1), grid=(10, 1, 1))
+gpusin(drv.Out(destsin), drv.In(a), block=(400, 1, 1), grid=(10, 1, 1))
+gpucos(drv.Out(destcos), drv.In(a), block=(400, 1, 1), grid=(10, 1, 1))
 
 p.subplot(2,1,1)
 p.plot(destsin)
